@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Task, Status, Priority } from '../types';
 import { Clock, AlertCircle, ChevronRight, User, Users, CheckCircle, Sparkles } from 'lucide-react';
 import { format, parseISO, isBefore } from 'date-fns';
@@ -12,7 +12,7 @@ interface KanbanViewProps {
 }
 
 const KanbanView: React.FC<KanbanViewProps> = ({ tasks, onEdit, onTaskClick, onQuickUpdate }) => {
-  const [hoveredTask, setHoveredTask] = React.useState<{ task: Task, x: number, y: number } | null>(null);
+  const [hoveredTask, setHoveredTask] = useState<{ task: Task, x: number, y: number } | null>(null);
   const columns = Object.values(Status).filter(s => s !== Status.CONCLUIDO);
 
   const getPriorityColor = (p: Priority) => {

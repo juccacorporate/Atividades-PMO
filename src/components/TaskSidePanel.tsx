@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Task, Status } from '../types';
-import { X, Edit2, Calendar, Clock, AlertCircle } from 'lucide-react';
+import { X, Edit2, Calendar, Clock, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
 import { format, parseISO, isBefore } from 'date-fns';
+import { geminiService } from '../services/geminiService';
+import ReactMarkdown from 'react-markdown';
 
 interface TaskSidePanelProps {
   task: Task;
@@ -10,7 +12,21 @@ interface TaskSidePanelProps {
 }
 
 const TaskSidePanel: React.FC<TaskSidePanelProps> = ({ task, onClose, onEdit }) => {
+  const [aiInsight, setAiInsight] = useState<string | null>(null);
+  const [loadingAi, setLoadingAi] = useState(false);
   const isOverdue = task.progresso < 100 && isBefore(parseISO(task.prazo), new Date());
+
+  const handleGetAiInsight = async () => {
+    setLoadingAi(true);
+    try {
+      const insight = await geminiService.analyzeTask(task);
+      setAiInsight(insight || 'Não foi possível gerar insights.');
+    } catch (error) {
+      alert('Erro ao gerar insights com IA.');
+    } finally {
+      setLoadingAi(false);
+    }
+  };
 
   return (
     <div className="w-[340px] shrink-0 bg-slate-900 border border-slate-800 rounded-[2rem] h-full flex flex-col shadow-2xl animate-in slide-in-from-right duration-300 overflow-hidden">
@@ -122,6 +138,34 @@ const TaskSidePanel: React.FC<TaskSidePanelProps> = ({ task, onClose, onEdit }) 
             </div>
           </div>
         )}
+
+        <div className="mt-4 pt-4 border-t border-slate-800">
+          {!aiInsight ? (
+            <button
+              onClick={handleGetAiInsight}
+              disabled={loadingAi}
+              className="w-full bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white py-3 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all shadow-lg shadow-violet-500/20"
+            >
+              {loadingAi ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+              Gerar Insight IA
+            </button>
+          ) : (
+            <div className="bg-slate-800/50 border border-violet-500/30 rounded-2xl p-4 animate-in fade-in zoom-in-95 duration-300">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles size={12} className="text-violet-400" />
+                  <span className="text-[9px] font-black text-violet-400 uppercase tracking-widest">Análise do Consultor IA</span>
+                </div>
+                <button onClick={() => setAiInsight(null)} className="text-slate-500 hover:text-white transition-colors">
+                  <X size={12} />
+                </button>
+              </div>
+              <div className="markdown-body text-[10px] text-slate-300 leading-relaxed prose prose-invert prose-sm max-w-none">
+                <ReactMarkdown>{aiInsight}</ReactMarkdown>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

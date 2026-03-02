@@ -4,7 +4,6 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis
 import { CheckCircle, Clock, AlertCircle, Activity, ListTodo, Briefcase, Sparkles, Loader2, X } from 'lucide-react';
 import { isBefore, parseISO } from 'date-fns';
 import { geminiService } from '../services/geminiService';
-import ReactMarkdown from 'react-markdown';
 
 interface DashboardViewProps {
   tasks: Task[];

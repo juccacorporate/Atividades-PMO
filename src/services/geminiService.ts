@@ -1,10 +1,11 @@
 import { GoogleGenAI } from "@google/genai";
 import { Task } from "../types";
 
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
+const getGenAI = () => new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || "" });
 
 export const geminiService = {
   async analyzeTask(task: Task) {
+    const ai = getGenAI();
     const model = "gemini-3-flash-preview";
     
     const prompt = `
@@ -29,7 +30,7 @@ export const geminiService = {
     `;
 
     try {
-      const response = await genAI.models.generateContent({
+      const response = await ai.models.generateContent({
         model,
         contents: prompt,
       });
@@ -42,6 +43,7 @@ export const geminiService = {
   },
 
   async analyzeDashboard(tasks: Task[], type: string) {
+    const ai = getGenAI();
     const model = "gemini-3-flash-preview";
     
     const taskSummary = tasks.map(t => ({
@@ -82,7 +84,7 @@ export const geminiService = {
     `;
 
     try {
-      const response = await genAI.models.generateContent({
+      const response = await ai.models.generateContent({
         model,
         contents: prompt,
         config: {
