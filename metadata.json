@@ -1,0 +1,8 @@
+{
+  "name": "Controle de Tarefas PMO",
+  "description": "Sistema avançado de gestão de projetos e tarefas PMO com Kanban, Dashboard, Insights via IA (Gemini) e integração em tempo real via SheetDB.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
